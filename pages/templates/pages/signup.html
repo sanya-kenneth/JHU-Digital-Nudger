@@ -1,0 +1,68 @@
+
+{% extends "base.html" %}
+
+
+
+{% block page_content %}
+
+ <div class="container-body">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">JHU Digital Nudger</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3 col-sm-1">
+      </div>
+      <div class="col-sm-6 col-xm-10">
+        <div class="card" style="padding: 30px; margin-top:20px; margin-bottom: 20px;">
+          
+          {% comment %} <img src="..." class="card-img-top" alt="..."> {% endcomment %}
+          <div class="card-body">
+            {% comment %} <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> {% endcomment %}
+
+            <form method="POST">
+              {% csrf_token %}
+              <h2 class="text-primary mb-4" style="margin-left: 25%; margin-right: 25%;">Trainee Sign Up</h2>
+                
+              {% for field in form %}
+              <p>
+                {% if field.errors %}
+                <ul class="errorlist">
+                  {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+                 {{ field.label_tag }} {{ field }}
+              </p>
+              {% endfor %}
+              <input class="form-control btn btn-primary"
+              style="width: 30%; margin-left: 35%; margin-right: 40%;" 
+              type="submit" value="Signup" 
+              />
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3 col-xm-1">
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<style>
+  #id_notes { height: 5em } /* textarea */
+  .errorlist li { color : red }
+  .container-body {
+    background-image: url("static/image.jpg");
+    background-color: #FAFAFA;
+  }
+</style>
+ 
+  {% endblock page_content %}

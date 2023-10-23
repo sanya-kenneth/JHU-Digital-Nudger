@@ -1,0 +1,10 @@
+venv/
+jhu_digital_nudger/__pycache__/
+jhu_digital_nudger/.env
+pages/__pycache__/
+pages/.DS_Store
+pages/migrations/__pycache__/
+dashboard/__pycache__/
+dashboard/migrations/__pycache__/
+db.sqlite3
+.DS_Store
