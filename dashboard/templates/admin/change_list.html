@@ -113,6 +113,7 @@
 
             <canvas id="trainerChart" width="400" height="100"></canvas>
             <canvas id="goalChart" width="400" height="100"></canvas>
+            <canvas id="notesChart" width="400" height="100"></canvas>
             {% comment %} <canvas id="traineeChart" width="400" height="100"></canvas> {% endcomment %}
             <canvas id="cohortChart" width="400" height="100"></canvas>
         {% endif %}
@@ -268,8 +269,6 @@
         const shiftData = {{ shift_data | safe }};
         const actData = {{ act_data | safe }};
 
-     
-
         // Add your javascript chart presentation below this comment
         var myChart = new Chart(ctx, {
           type: 'bar',
@@ -309,12 +308,64 @@
       });
         } 
 
+        const notesChart = () => {
+        const ctx = document.getElementById('notesChart').getContext('2d');
 
-        
-        
+        const senseHelpRankingData = {{ sense_help_ranking_data | safe }};
+        const senseDesiredProgressData = {{ sense_desired_progress_data | safe }};
+        const challengeAtHandData = {{ challenge_at_hand_data | safe }};
+        const goalPriorityData = {{ goal_priority_data | safe }};
+
+        // Add your javascript chart presentation below this comment
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+              datasets: [{
+                  label: 'Sense Help Ranking Data',
+                  data: senseHelpRankingData,
+                  backgroundColor: '#66b2b2',
+                  barPercentage: 0.8,
+              },
+              {
+                label: 'Sense Desired ProgressData',
+                data: senseDesiredProgressData,
+                backgroundColor: '#a679d2',
+                barPercentage: 0.4,
+            },
+            {
+                label: 'Challenge At Hand Data',
+                data: challengeAtHandData,
+                backgroundColor: '#8000ff',
+                barPercentage: 0.4,
+            },
+            {
+                label: 'Goal Priority Data',
+                data: goalPriorityData,
+                backgroundColor: '#ee82ee',
+                barPercentage: 0.4,
+            }]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                         
+                      },
+                  }, ],
+              }
+          }
+      });
+        } 
+
+
         trainerChart()
         goalChart()
         cohortChart()
+        notesChart()
     
         });
         </script>

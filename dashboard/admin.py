@@ -42,7 +42,15 @@ class DashboardAdminClass(ModelAdmin):
             return json.loads(response._content)
         except Exception as e:
             ...
-    
+        
+    def user_notes(self):
+        try:
+            url = "https://kasukuappstore.com/apptest/get_user_saved_notes.php"
+            response = requests.get(url=url)
+            return response.json()
+        except Exception as e:
+            ...
+        
     def changelist_view(self, request, extra_context=None):
         # Aggregate new trainers per day
         trainer_data = (
@@ -90,6 +98,59 @@ class DashboardAdminClass(ModelAdmin):
                 if data['date'].month == int(key):
                     cohort_months[key] = cohort_months[key]+data['y']
         cohort_data = [cohort_months[f'{x}'] for x in range(1, 12)]
+        
+        notes_dt = self.user_notes()
+        
+        sense_help_ranking = []
+        sense_desired_progress = []
+        challenge_at_hand = []
+        goal_priority = []
+        
+        for note in notes_dt:
+            if note['notes_type'].lower() == 'sense_help_ranking':
+                sense_help_ranking.append(note)
+            if note['notes_type'].lower() == 'sense_desired_progress':
+                sense_desired_progress.append(note)
+            if note['notes_type'].lower() == 'challenge_at_hand':
+                challenge_at_hand.append(note)
+            if note['notes_type'].lower() == 'goal_priority':
+                goal_priority.append(note)
+                
+        sense_help_ranking_months = month_data.copy()
+        for data in sense_help_ranking:
+            _date = datetime.strptime(data['time_created'].split(' ')[0], '%Y-%m-%d')
+            for key, _month_data in sense_help_ranking_months.items():
+                if _date.month == int(key):
+                   
+                    sense_help_ranking_months[key] = sense_help_ranking_months[key] + 1
+        sense_help_ranking_data = [sense_help_ranking_months[f'{x}'] for x in range(1, 12)]
+        
+        sense_desired_progress_months = month_data.copy()
+        for data in sense_desired_progress:
+            _date = datetime.strptime(data['time_created'].split(' ')[0], '%Y-%m-%d')
+            for key, _month_data in sense_desired_progress_months.items():
+                if _date.month == int(key):
+                   
+                    sense_desired_progress_months[key] = sense_desired_progress_months[key] + 1
+        sense_desired_progress_data = [sense_desired_progress_months[f'{x}'] for x in range(1, 12)]
+        
+        challenge_at_hand_months = month_data.copy()
+        for data in challenge_at_hand:
+            _date = datetime.strptime(data['time_created'].split(' ')[0], '%Y-%m-%d')
+            for key, _month_data in challenge_at_hand_months.items():
+                if _date.month == int(key):
+                   
+                    challenge_at_hand_months[key] = challenge_at_hand_months[key] + 1
+        challenge_at_hand_data = [challenge_at_hand_months[f'{x}'] for x in range(1, 12)]
+        
+        goal_priority_months = month_data.copy()
+        for data in goal_priority:
+            _date = datetime.strptime(data['time_created'].split(' ')[0], '%Y-%m-%d')
+            for key, _month_data in goal_priority_months.items():
+                if _date.month == int(key):
+                    goal_priority_months[key] = goal_priority_months[key] + 1
+        goal_priority_data = [goal_priority_months[f'{x}'] for x in range(1, 12)]
+        
         
         goal_dt = self.goal_details()
         
@@ -153,6 +214,11 @@ class DashboardAdminClass(ModelAdmin):
                                           "model_analytics": model_analytics,
                                           "sense_data": sense_data,
                                           "shift_data": shift_data,
-                                          "act_data": act_data}
+                                          "act_data": act_data,
+                                          "sense_help_ranking_data": sense_help_ranking_data,
+                                          "sense_desired_progress_data": sense_desired_progress_data,
+                                          "challenge_at_hand_data": challenge_at_hand_data,
+                                          "goal_priority_data": goal_priority_data
+                                          }
 
         return super().changelist_view(request, extra_context=extra_context)
