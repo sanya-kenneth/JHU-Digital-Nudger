@@ -304,6 +304,11 @@ UNFOLD = {
                         "icon": "inbox",
                         "link": reverse_lazy("admin:pages_messages_changelist"),
                     },
+                    {
+                        "title": "User Notes",
+                        "icon": "notes",
+                        "link": reverse_lazy("admin:pages_usernote_changelist"),
+                    },
                 ],
             },
         ],

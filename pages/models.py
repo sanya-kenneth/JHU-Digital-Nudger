@@ -241,4 +241,18 @@ class Content(models.Model):
     content_order = models.IntegerField()
     bot_response = models.TextField()
     bot_question = models.TextField()
+    
 
+class UserNote(models.Model):
+    name = models.CharField(max_length=300, default='user note')
+    phone = models.CharField(max_length=300, null=True)
+    notes = models.CharField(max_length=300, null=True)
+    notes_type = models.CharField(max_length=300, null=True)
+    time_created = models.CharField(max_length=300, null=True)
+    
+    class Meta:
+        managed = False
+  
+
+class UserReminders(models.Model):
+    name = models.CharField(max_length=300, default='user reminders')

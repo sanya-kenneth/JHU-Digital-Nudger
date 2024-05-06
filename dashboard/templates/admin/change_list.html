@@ -12,6 +12,10 @@
 
   {{ media.css }}
 
+  <style>
+    h2 {text-align: center; font-weight: bold;}
+  </style>
+
   {% if not actions_on_top and not actions_on_bottom %}
     <style>
       #changelist table thead th:first-child {width: inherit}
@@ -110,11 +114,14 @@
             </div>
         </div>
         <br>
-
+            <h2 > Trainers </h2>
             <canvas id="trainerChart" width="400" height="100"></canvas>
+            <h2> Goals </h2>
             <canvas id="goalChart" width="400" height="100"></canvas>
+            <h2> Notes </h2>
             <canvas id="notesChart" width="400" height="100"></canvas>
             {% comment %} <canvas id="traineeChart" width="400" height="100"></canvas> {% endcomment %}
+            <h2> Cohorts </h2>
             <canvas id="cohortChart" width="400" height="100"></canvas>
         {% endif %}
 
