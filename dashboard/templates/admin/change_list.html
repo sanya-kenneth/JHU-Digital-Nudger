@@ -1,0 +1,379 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list unfold_list %}
+
+{% block extrastyle %}
+  {{ block.super }}
+
+  {% if cl.formset %}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  {% endif %}
+
+    <script src="{% url 'admin:jsi18n' %}"></script>
+
+  {{ media.css }}
+
+  <style>
+    h2 {text-align: center; font-weight: bold;}
+  </style>
+
+  {% if not actions_on_top and not actions_on_bottom %}
+    <style>
+      #changelist table thead th:first-child {width: inherit}
+    </style>
+  {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"> </script>
+    {{ media.js }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% if not is_popup %}
+    {% block breadcrumbs %}
+        <div class="px-4 lg:px-12">
+            <div class="container mb-6 mx-auto -my-3 lg:mb-12">
+                <ul class="flex">
+                    {% url 'admin:index' as link %}
+                    {% trans 'Home' as name %}
+                    {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=name %}
+
+                    {% url 'admin:app_list' app_label=cl.opts.app_label as link %}
+                    {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=cl.opts.app_config.verbose_name %}
+
+                    {% include 'unfold/helpers/breadcrumb_item.html' with link='' name=cl.opts.verbose_name_plural|capfirst %}
+                </ul>
+            </div>
+        </div>
+    {% endblock %}
+{% endif %}
+
+{% block coltype %}{% endblock %}
+
+{% block nav-global-side %}
+    {% block object-tools %}
+        <ul class="object-tools">
+            {% block object-tools-items %}
+                {% change_list_object_tools %}
+            {% endblock %}
+        </ul>
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+
+        {% if dashboard %}
+            <div class="flex gap-4 ...">
+            <div class="flex-auto w-32 ...">
+
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">Trainers</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ model_analytics.trainers }}</p>
+                </div>
+
+            </div>
+            <div class="flex-1 w-32 ...">
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">Trainees</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ model_analytics.trainees }}</p>
+                </div>
+            </div>
+            <div class="flex-auto w-32 ...">
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">Cohorts</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ model_analytics.cohorts }}</p>
+                </div>
+            </div>
+            <div class="flex-1 w-32 ...">
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">Reminders</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ goal_analytics.total_reminders }}</p>
+                </div>
+            </div>
+            <div class="flex-1 w-32 ...">
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">SENSE</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ goal_analytics.total_sense }}</p>
+                </div>
+            </div>
+            <div class="flex-1 w-32 ...">
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">SHIFT</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ goal_analytics.total_shift }}</p>
+                </div>
+            </div>
+            <div class="flex-auto w-32 ...">
+                <div class="max-w-sm p-3 bg-white border border-gray-200 rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                    <p style="font-weight: bold;" class="mb-1 font-normal text-sm text-center text-gray-450 dark:text-gray-450">ACT</p>
+                    <p style="color: #980DFF; font-weight: bold;" class="mb-1 font-bold text-sm text-center text-indigo-600 dark:text-indigo-600">{{ goal_analytics.total_act }}</p>
+                </div>
+            </div>
+        </div>
+        <br>
+            <h2 > Trainers </h2>
+            <canvas id="trainerChart" width="400" height="100"></canvas>
+            <h2> Goals </h2>
+            <canvas id="goalChart" width="400" height="100"></canvas>
+            <h2> Notes </h2>
+            <canvas id="notesChart" width="400" height="100"></canvas>
+            {% comment %} <canvas id="traineeChart" width="400" height="100"></canvas> {% endcomment %}
+            <h2> Cohorts </h2>
+            <canvas id="cohortChart" width="400" height="100"></canvas>
+        {% endif %}
+
+        {% if not dashboard %}
+            {% if cl.formset and cl.formset.errors %}
+                {% include "unfold/helpers/messages/errornote.html" with errors=cl.formset.errors %}
+
+                {{ cl.formset.non_form_errors }}
+            {% endif %}
+
+            <div class="flex -mx-4 module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+                <div class="changelist-form-container flex-grow px-4" x-data="{ filterOpen: false }">
+                    {% block date_hierarchy %}
+                        {% if cl.date_hierarchy %}
+                            {% date_hierarchy cl %}
+                        {% endif %}
+                    {% endblock %}
+
+                    <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
+                        {% csrf_token %}
+
+                        {% if cl.formset %}
+                            <div>{{ cl.formset.management_form }}</div>
+                        {% endif %}
+
+                        {% block result_list %}
+                            {% if actions_on_top %}
+                                {% if cl.search_fields or action_form or cl.has_filters %}
+                                    <div class="bg-gray-50 flex flex-col gap-3 mb-4 p-3 rounded-md md:flex-row dark:bg-gray-800">
+                                        {% block search %}
+                                            {% search_form cl %}
+                                        {% endblock %}
+
+                                        {% if action_form %}
+                                            {% admin_actions %}
+                                        {% endif %}
+
+                                        {% block filters %}
+                                            {% if cl.has_filters %}
+                                                <a class="{% if cl.has_active_filters %}bg-primary-600 border-primary-600 text-white{% else %}bg-white text-gray-500 hover:text-gray-700 dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400{% endif %} border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:ml-auto md:mt-0" x-on:click="filterOpen = true" x-on:keydown.escape.window="filterOpen = false">
+                                                    {% trans "Filters" %}
+
+                                                    <span class="material-symbols-outlined md-18 ml-auto -mr-1 pl-4 {% if cl.has_active_filters %}text-white{% else %}text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 dark:text-gray-500{% endif %}">filter_list</span>
+                                                </a>
+                                            {% endif %}
+                                        {% endblock %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            {% unfold_result_list cl %}
+
+                            {% block pagination %}
+                                {% pagination cl %}
+                            {% endblock %}
+                        {% endblock %}
+                    </form>
+
+                    
+
+                    {% if cl.has_filters %}
+                        {% include "unfold/change_list_filter.html" %}
+                    {% endif %}
+                </div>
+            </div> 
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const trainerChart = () => {
+                const ctx = document.getElementById('trainerChart').getContext('2d');
+            const trainerData = {{ trainer_data | safe }};
+
+            const traineeData = {{ trainee_data | safe }};
+
+            // Parse the dates to JS
+            trainerData.forEach((d) => {d.x = new Date(d.date);});
+
+            console.log(trainerData, 'Trainer Data')
+
+            // Parse the dates to JS
+            traineeData.forEach((d) => {d.x = new Date(d.date);});
+
+            // Add your javascript chart presentation below this comment
+            var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                  datasets: [{
+                      label: 'Trainers',
+                      data: trainerData,
+                      backgroundColor: '#8000ff',
+                      barPercentage: 0.8,
+                  },
+                  {
+                    label: 'Trainees',
+                    data: traineeData,
+                    backgroundColor: '#a679d2',
+                    barPercentage: 0.4,
+                }]
+              },
+              options: {
+                  responsive: true,
+                  scales: {
+                    
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                             
+                          },
+                      }, ],
+                  }
+              }
+          });
+            } 
+
+            const cohortChart = () => {
+                const ctx = document.getElementById('cohortChart').getContext('2d');
+            const chartData = {{ cohort_data | safe }};
+            // Parse the dates to JS
+            chartData.forEach((d) => {d.x = new Date(d.date);});
+
+            // Add your javascript chart presentation below this comment
+            var myChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                  datasets: [{
+                      label: 'Cohorts',
+                      data: chartData,
+                      backgroundColor: '#a679d2',
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                          
+                          },
+                      }, ],
+                  }
+              }
+          });
+        } 
+
+        const goalChart = () => {
+            const ctx = document.getElementById('goalChart').getContext('2d');
+        const senseData = {{ sense_data | safe }};
+        const shiftData = {{ shift_data | safe }};
+        const actData = {{ act_data | safe }};
+
+        // Add your javascript chart presentation below this comment
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+              datasets: [{
+                  label: 'SENSE',
+                  data: senseData,
+                  backgroundColor: '#66b2b2',
+                  barPercentage: 0.8,
+              },
+              {
+                label: 'SHIFT',
+                data: shiftData,
+                backgroundColor: '#a679d2',
+                barPercentage: 0.4,
+            },
+            {
+                label: 'ACT',
+                data: actData,
+                backgroundColor: '#8000ff',
+                barPercentage: 0.4,
+            }]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                         
+                      },
+                  }, ],
+              }
+          }
+      });
+        } 
+
+        const notesChart = () => {
+        const ctx = document.getElementById('notesChart').getContext('2d');
+
+        const senseHelpRankingData = {{ sense_help_ranking_data | safe }};
+        const senseDesiredProgressData = {{ sense_desired_progress_data | safe }};
+        const challengeAtHandData = {{ challenge_at_hand_data | safe }};
+        const goalPriorityData = {{ goal_priority_data | safe }};
+
+        // Add your javascript chart presentation below this comment
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['January', 'February', 'March', 'April',  'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+              datasets: [{
+                  label: 'Sense Help Ranking Data',
+                  data: senseHelpRankingData,
+                  backgroundColor: '#66b2b2',
+                  barPercentage: 0.8,
+              },
+              {
+                label: 'Sense Desired ProgressData',
+                data: senseDesiredProgressData,
+                backgroundColor: '#a679d2',
+                barPercentage: 0.4,
+            },
+            {
+                label: 'Challenge At Hand Data',
+                data: challengeAtHandData,
+                backgroundColor: '#8000ff',
+                barPercentage: 0.4,
+            },
+            {
+                label: 'Goal Priority Data',
+                data: goalPriorityData,
+                backgroundColor: '#ee82ee',
+                barPercentage: 0.4,
+            }]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                         
+                      },
+                  }, ],
+              }
+          }
+      });
+        } 
+
+
+        trainerChart()
+        goalChart()
+        cohortChart()
+        notesChart()
+    
+        });
+        </script>
+{% endblock %}
